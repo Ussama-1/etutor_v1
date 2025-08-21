@@ -8,42 +8,44 @@ import jwt from 'jsonwebtoken';
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, password, student,referId } = await req.json();
+    const { email, password, student, referId } = await req.json();
 
-    if (!email || !password || !student || !student.grade || !student.levelOfStudy) {
-      console.error('Validation failed: Missing fields');
+    if (
+      !email ||
+      !password ||
+      !student ||
+      !student.grade ||
+      !student.levelOfStudy
+    ) {
       return NextResponse.json({ message: 'Missing fields' }, { status: 422 });
     }
+
     await connectMongoDB();
+
     const existingUser = await UserModel.findOne({ email });
     if (existingUser) {
-      console.error('User already exists:', email);
-      return NextResponse.json({ message: 'User already exists' }, { status: 422 });
+      return NextResponse.json(
+        { message: 'User already exists' },
+        { status: 422 }
+      );
     }
-
 
     let referredBy = null;
-
     if (referId) {
-        const referringUser = await UserModel.findById(referId);
-        if (!referringUser) {
-            console.error('Invalid referral ID:', referId);
-            return NextResponse.json({ message: 'Invalid referral ID' }, { status: 422 });
-        }
-        referredBy = referringUser._id;
-    }
-      // Award the etokis to the referring user
-      if (referredBy !=null) {
-        await UserModel.findByIdAndUpdate(referredBy, { $inc: { etokis: 5 } });
-       
+      const referringUser = await UserModel.findById(referId);
+      if (!referringUser) {
+        return NextResponse.json(
+          { message: 'Invalid referral ID' },
+          { status: 422 }
+        );
+      }
+      referredBy = referringUser._id;
     }
 
-
-
-
-
-
-
+    // Award the etokis to the referring user
+    if (referredBy != null) {
+      await UserModel.findByIdAndUpdate(referredBy, { $inc: { etokis: 5 } });
+    }
 
     const hashedPassword = await hash(password, 12);
     const newUser = new UserModel({
@@ -53,6 +55,7 @@ export async function POST(req: NextRequest) {
       role: 'student',
     });
     const savedUser = await newUser.save();
+
     const newStudent = new StudentModel({
       user: savedUser._id,
       levelOfStudy: student.levelOfStudy,
@@ -71,33 +74,40 @@ export async function POST(req: NextRequest) {
       firstName: student.firstName,
       lastName: student.lastName,
       phoneNumber: student.phoneNumber,
-  
     });
     await newStudent.save();
-    const secret = process.env.JWT_SECRET;
-    if (!secret) {
-      console.error('JWT secret is not defined');
-      return NextResponse.json({ message: 'JWT secret is not defined' }, { status: 500 });
-    }
 
+    const secret = process.env.JWT_SECRET || '';
     const token = jwt.sign(
       { userId: savedUser._id, email: savedUser.email },
       secret,
-      { expiresIn: '1h' } 
+      { expiresIn: '1h' }
     );
-
 
     await sendVerificationEmail(savedUser.email, token).catch(error => {
       console.error('Error sending verification email:', error);
     });
-    return NextResponse.json({ message: 'Student created. Please check your email to verify your account.' }, { status: 201 });
+
+    return NextResponse.json(
+      {
+        message:
+          'Student created. Please check your email to verify your account.',
+      },
+      { status: 201 }
+    );
   } catch (error: unknown) {
     if (error instanceof Error) {
       console.error('Error processing signup:', error.message, error.stack);
-      return NextResponse.json({ message: 'Internal server error', error: error.message }, { status: 500 });
+      return NextResponse.json(
+        { message: 'Internal server error', error: error.message },
+        { status: 500 }
+      );
     } else {
       console.error('An unknown error occurred');
-      return NextResponse.json({ message: 'An unknown error occurred' }, { status: 500 });
+      return NextResponse.json(
+        { message: 'An unknown error occurred' },
+        { status: 500 }
+      );
     }
   }
 }

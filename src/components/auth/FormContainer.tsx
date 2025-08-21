@@ -22,7 +22,8 @@ const FormContainer = ({
       className={`bg-[#EDE8FA] rounded-3xl p-8 m-1 sm:p-12 w-full ${containerMaxWidth} mx-auto shadow-lg`}
     >
       <h1
-        className={`text-[#534988] text-2xl sm:text-3xl lg:text-4xl font-semibold ${alignmentClass} mb-8 sm:mb-12`}
+        className={`text-[#534988] font-bold ${alignmentClass} mb-2`}
+        style={{ fontSize: '40px' }}
       >
         {title}
       </h1>
