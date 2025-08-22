@@ -1,5 +1,5 @@
 // lib/emailSender.ts
-import axios from "axios";
+import axios from 'axios';
 
 type EmailRecipient = {
   address: string;
@@ -43,12 +43,12 @@ export async function sendEmail(options: EmailOptions) {
       new URLSearchParams({
         client_id: clientId,
         client_secret: clientSecret,
-        scope: "https://graph.microsoft.com/.default",
-        grant_type: "client_credentials",
+        scope: 'https://graph.microsoft.com/.default',
+        grant_type: 'client_credentials',
       }),
       {
         headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
       }
     );
@@ -57,15 +57,15 @@ export async function sendEmail(options: EmailOptions) {
 
     // Format recipients
     const formatRecipients = (emails: string[]) => {
-      return emails.map((email) => ({
+      return emails.map(email => ({
         emailAddress: { address: email },
       }));
     };
 
     // Format attachments if provided
     const formattedAttachments =
-      options.attachments?.map((attachment) => ({
-        "@odata.type": "#microsoft.graph.fileAttachment",
+      options.attachments?.map(attachment => ({
+        '@odata.type': '#microsoft.graph.fileAttachment',
         name: attachment.name,
         contentType:
           attachment.contentType || getContentTypeFromFileName(attachment.name),
@@ -77,7 +77,7 @@ export async function sendEmail(options: EmailOptions) {
       message: {
         subject: options.subject,
         body: {
-          contentType: options.isHtml !== false ? "HTML" : "Text",
+          contentType: options.isHtml !== false ? 'HTML' : 'Text',
           content: options.body,
         },
         toRecipients: formatRecipients(options.recipients),
@@ -91,7 +91,7 @@ export async function sendEmail(options: EmailOptions) {
           ? { attachments: formattedAttachments }
           : {}),
       },
-      saveToSentItems: options.saveToSentItems !== false ? "true" : "false",
+      saveToSentItems: options.saveToSentItems !== false ? 'true' : 'false',
     };
 
     await axios.post(
@@ -100,15 +100,15 @@ export async function sendEmail(options: EmailOptions) {
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       }
     );
 
-    return { success: true, message: "Email sent successfully" };
+    return { success: true, message: 'Email sent successfully' };
   } catch (error: any) {
     console.error(
-      "Error sending email:",
+      'Error sending email:',
       error?.response?.data || error.message
     );
     return {
@@ -122,27 +122,27 @@ export async function sendEmail(options: EmailOptions) {
  * Helper function to guess MIME type from file extension
  */
 function getContentTypeFromFileName(fileName: string): string {
-  const extension = fileName.split(".").pop()?.toLowerCase() || "";
+  const extension = fileName.split('.').pop()?.toLowerCase() || '';
 
   const mimeTypes: Record<string, string> = {
-    pdf: "application/pdf",
-    doc: "application/msword",
-    docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    xls: "application/vnd.ms-excel",
-    xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    ppt: "application/vnd.ms-powerpoint",
-    pptx: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-    jpg: "image/jpeg",
-    jpeg: "image/jpeg",
-    png: "image/png",
-    gif: "image/gif",
-    txt: "text/plain",
-    csv: "text/csv",
-    html: "text/html",
-    zip: "application/zip",
-    json: "application/json",
-    xml: "application/xml",
+    pdf: 'application/pdf',
+    doc: 'application/msword',
+    docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    xls: 'application/vnd.ms-excel',
+    xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    ppt: 'application/vnd.ms-powerpoint',
+    pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    jpg: 'image/jpeg',
+    jpeg: 'image/jpeg',
+    png: 'image/png',
+    gif: 'image/gif',
+    txt: 'text/plain',
+    csv: 'text/csv',
+    html: 'text/html',
+    zip: 'application/zip',
+    json: 'application/json',
+    xml: 'application/xml',
   };
 
-  return mimeTypes[extension] || "application/octet-stream";
+  return mimeTypes[extension] || 'application/octet-stream';
 }

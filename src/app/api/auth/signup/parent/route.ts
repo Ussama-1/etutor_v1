@@ -11,12 +11,6 @@ export async function POST(req: NextRequest) {
   try {
     const { email, password, parent, referId } = await req.json();
 
-    console.log('parent: ', parent);
-    console.log('email: ', email);
-    console.log('password: ', password);
-    console.log('referId: ', referId);
-
-    // Validate required fields
     const requiredFields = [
       'firstName',
       'lastName',
@@ -27,7 +21,6 @@ export async function POST(req: NextRequest) {
     ];
     for (const field of requiredFields) {
       if (!parent[field]) {
-        console.error(`Validation failed: Missing field ${field}`);
         return NextResponse.json(
           { message: `Missing field: ${field}` },
           { status: 422 }
@@ -35,17 +28,15 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    await connectMongoDB();
     const existingUser = await UserModel.findOne({ email });
     if (existingUser) {
-      console.error('User already exists:', email);
       return NextResponse.json(
         { message: 'User already exists' },
         { status: 422 }
       );
     }
-    let referredBy = null;
 
+    let referredBy = null;
     if (referId) {
       const referringUser = await UserModel.findById(referId);
       if (!referringUser) {
@@ -55,7 +46,7 @@ export async function POST(req: NextRequest) {
           { status: 422 }
         );
       }
-      referredBy = referringUser._id;
+      referredBy = referringUser?._id;
     }
 
     const hashedPassword = await hash(password, 12);
@@ -65,9 +56,8 @@ export async function POST(req: NextRequest) {
       referredBy,
       role: 'parent',
     });
-
     const savedUser = await newUser.save();
-    // Award the etokis to the referring user
+
     if (referredBy) {
       await UserModel.findByIdAndUpdate(referredBy, { $inc: { etokis: 5 } });
     }
@@ -87,13 +77,10 @@ export async function POST(req: NextRequest) {
       lastName: parent.lastName,
       phoneNumber: parent.phoneNumber,
     });
-
     await newParent.save();
 
     const secret = process.env.JWT_SECRET;
-
     if (!secret) {
-      console.error('JWT secret is not defined');
       return NextResponse.json(
         { message: 'JWT secret is not defined' },
         { status: 500 }
@@ -106,7 +93,6 @@ export async function POST(req: NextRequest) {
       { expiresIn: '1h' }
     );
 
-    // Send the generated token to the sendVerificationEmail function
     await sendVerificationEmail(savedUser.email, token).catch(error => {
       console.error('Error sending verification email:', error);
     });
@@ -120,13 +106,11 @@ export async function POST(req: NextRequest) {
     );
   } catch (error: unknown) {
     if (error instanceof Error) {
-      console.error('Error processing signup:', error.message, error.stack);
       return NextResponse.json(
         { message: 'Internal server error', error: error.message },
         { status: 500 }
       );
     } else {
-      console.error('An unknown error occurred');
       return NextResponse.json(
         { message: 'An unknown error occurred' },
         { status: 500 }
