@@ -13,18 +13,27 @@ import AdditionalInformation from '@/components/auth/AdditionalInformation';
 import ShowAvailability from '@/components/auth/ShowAvailability';
 import SignUpForm from '@/components/auth/SignUpForm';
 
-export interface StudentDetails {
+export interface ParentDetails {
   firstName: string;
   lastName: string;
   email?: string;
   password?: string;
+  phoneNumber?: string;
+  country: string;
+  stateCity: string;
+  streetName: string;
+  zipCode: string;
+}
+
+export interface ChildDetails {
+  firstName: string;
+  lastName: string;
   age: string;
   country: string;
   stateCity: string;
   institution: string;
   streetName: string;
   zipCode: string;
-  phoneNumber?: string;
 }
 
 const Page = () => {
@@ -36,15 +45,13 @@ const Page = () => {
   const [isGradeConfirmed, setIsGradeConfirmed] = useState(false);
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
   const [personalDetailsIsConfirmed, setPersonalDetailsIsConfirmed] =
-    useState<StudentDetails>({
+    useState<ParentDetails>({
       firstName: '',
       lastName: '',
       email: '',
       password: '',
-      age: '',
       country: '',
       stateCity: '',
-      institution: '',
       streetName: '',
       zipCode: '',
       phoneNumber: '',
@@ -54,28 +61,55 @@ const Page = () => {
   const [selectedTimeZone, setSelectedTimeZone] = useState(
     'Berlin, GMT +02:200'
   );
+  const [childDetailsIsConfirmed, setChildDetailsIsConfirmed] =
+    useState<ChildDetails>({
+      firstName: '',
+      lastName: '',
+      age: '',
+      country: '',
+      stateCity: '',
+      institution: '',
+      streetName: '',
+      zipCode: '',
+    });
   const [error, seterror] = useState('');
   const [loading, setLoading] = useState<Boolean>(false);
   const router = useRouter();
 
   const formData = {
-    grade: selectedGrade,
-    levelOfStudy: selectedLevel,
-    firstName: personalDetailsIsConfirmed.firstName,
-    lastName: personalDetailsIsConfirmed.lastName,
-    phoneNumber: personalDetailsIsConfirmed.phoneNumber,
-    personalInformation: {
-      country: personalDetailsIsConfirmed.country,
-      city: personalDetailsIsConfirmed.stateCity,
-      streetName: personalDetailsIsConfirmed.streetName,
-      zipcode: personalDetailsIsConfirmed.zipCode,
-      institution: personalDetailsIsConfirmed.institution,
-      age: personalDetailsIsConfirmed.age,
+    email: personalDetailsIsConfirmed.email,
+    password: personalDetailsIsConfirmed.password,
+    parent: {
+      firstName: personalDetailsIsConfirmed.firstName,
+      lastName: personalDetailsIsConfirmed.lastName,
+      age: childDetailsIsConfirmed.age,
+      institution: childDetailsIsConfirmed.institution,
+      phoneNumber: personalDetailsIsConfirmed.phoneNumber,
+      levelOfStudy: selectedLevel,
+      grade: selectedGrade,
+      subjectChildNeeds: selectedSubjects,
+      additionalInformation: additionalInformation,
+      availability: selectedTimeZone + ' ' + selectedDate,
+      childInformation: {
+        firstName: childDetailsIsConfirmed.firstName,
+        lastName: childDetailsIsConfirmed.lastName,
+        age: childDetailsIsConfirmed.age,
+        country: childDetailsIsConfirmed.country,
+        city: childDetailsIsConfirmed.stateCity,
+        institution: childDetailsIsConfirmed.institution,
+        streetName: childDetailsIsConfirmed.streetName,
+        zipCode: childDetailsIsConfirmed.zipCode,
+      },
+      parentPersonalInformation: {
+        country: personalDetailsIsConfirmed.country,
+        city: personalDetailsIsConfirmed.stateCity,
+        streetName: personalDetailsIsConfirmed.streetName,
+        zipCode: personalDetailsIsConfirmed.zipCode,
+      },
     },
-    subjects: selectedSubjects,
-    additionalInformation: additionalInformation,
-    availability: selectedTimeZone + selectedDate,
   };
+
+  console.log('formData: ', formData);
 
   const handleOptionChange = (option: string) => {
     setSelectedLevel(option);
@@ -94,8 +128,8 @@ const Page = () => {
     setQuestionNo(QuestionNo + 1);
   };
 
-  const handlePersonalDetailsConfirmation = (data: StudentDetails) => {
-    setPersonalDetailsIsConfirmed({
+  const handleChildDetailsConfirmation = (data: ChildDetails) => {
+    setChildDetailsIsConfirmed({
       firstName: data.firstName,
       lastName: data.lastName,
       age: data.age,
@@ -190,7 +224,7 @@ const Page = () => {
             handleGradeClick={handleGradeClick}
             selectedGrade={selectedGrade}
             gradeConfirmationHandler={() => setIsGradeConfirmed(true)}
-            title='What is your Grade?'
+            title='What is your Child’s Grade?'
           />
         );
       case 'elementary':
@@ -200,7 +234,7 @@ const Page = () => {
             handleGradeClick={handleGradeClick}
             selectedGrade={selectedGrade}
             gradeConfirmationHandler={() => setIsGradeConfirmed(true)}
-            title='What is your Grade?'
+            title='What is your Child’s Grade?'
           />
         );
       case 'high':
@@ -210,7 +244,7 @@ const Page = () => {
             handleGradeClick={handleGradeClick}
             selectedGrade={selectedGrade}
             gradeConfirmationHandler={() => setIsGradeConfirmed(true)}
-            title='What is your Grade?'
+            title='What is your Child’s Grade?'
           />
         );
       case 'college':
@@ -220,7 +254,7 @@ const Page = () => {
             handleGradeClick={handleGradeClick}
             selectedGrade={selectedGrade}
             gradeConfirmationHandler={() => setIsGradeConfirmed(true)}
-            title='What is your Grade?'
+            title='What is your Child’s Grade?'
           />
         );
       default:
@@ -234,14 +268,14 @@ const Page = () => {
         return (
           <SubjectSelection
             subjectConfirmationHandler={handleSubjectConfirmation}
-            title='What subjects do you need help with?'
+            title='What subjects does your child need help with?'
           />
         );
       case 2:
         return (
           <PersonalDetailsForm
-            onConfirm={handlePersonalDetailsConfirmation}
-            title='Fill in your Personal Information'
+            onConfirm={handleChildDetailsConfirmation}
+            title='Child’s Personal Information'
           />
         );
       case 3:
@@ -249,14 +283,14 @@ const Page = () => {
           <AdditionalInformation
             onConfirm={handleAdditionalInformationConfirmation}
             title='Additional Information'
-            description='Share anything that could help your eTutor support you better — like your learning style, challenges, focus issues, or accommodations you use at school. This will help us tailor your learning experience.'
+            description='Please share anything you think your child’s eTutor should know to support them better. This could include learning preferences, challenges, a 504 plan, or helpful teaching strategies. Your notes will help us personalize their learning experience.'
           />
         );
       case 4:
         return (
           <ShowAvailability
             onConfirm={handleAvailabilityConfirmation}
-            title='When are you available?'
+            title='When is your child available?'
           />
         );
       case 5:
@@ -277,8 +311,8 @@ const Page = () => {
         <LevelSelection
           handleOptionChange={handleOptionChange}
           confirmGrade={confirmGrade}
-          formType='student'
-          title='What is your level of study?'
+          formType='parent'
+          title='What grade level is your child in?'
         />
       )}
       {selectedLevel && !isGradeConfirmed && renderClassLevelOptions()}
