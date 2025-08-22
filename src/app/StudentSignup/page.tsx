@@ -141,7 +141,7 @@ const Page = () => {
     try {
       const referId = localStorage.getItem('referIdPerson');
 
-      const response = await fetch('/api/auth/signup', {
+      const response = await fetch('/api/auth/signups', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

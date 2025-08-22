@@ -1,5 +1,4 @@
 import { hash } from 'bcryptjs';
-import { connectMongoDB } from '../../connection/connection';
 import UserModel from '../../models/User';
 import StudentModel from '../../models/Student';
 import { NextRequest, NextResponse } from 'next/server';
@@ -19,8 +18,6 @@ export async function POST(req: NextRequest) {
     ) {
       return NextResponse.json({ message: 'Missing fields' }, { status: 422 });
     }
-
-    await connectMongoDB();
 
     const existingUser = await UserModel.findOne({ email });
     if (existingUser) {
@@ -42,7 +39,6 @@ export async function POST(req: NextRequest) {
       referredBy = referringUser._id;
     }
 
-    // Award the etokis to the referring user
     if (referredBy != null) {
       await UserModel.findByIdAndUpdate(referredBy, { $inc: { etokis: 5 } });
     }
@@ -97,13 +93,11 @@ export async function POST(req: NextRequest) {
     );
   } catch (error: unknown) {
     if (error instanceof Error) {
-      console.error('Error processing signup:', error.message, error.stack);
       return NextResponse.json(
         { message: 'Internal server error', error: error.message },
         { status: 500 }
       );
     } else {
-      console.error('An unknown error occurred');
       return NextResponse.json(
         { message: 'An unknown error occurred' },
         { status: 500 }
