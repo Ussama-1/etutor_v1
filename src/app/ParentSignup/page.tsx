@@ -12,6 +12,8 @@ import PersonalDetailsForm from '@/components/auth/PersonalDetailsForm';
 import AdditionalInformation from '@/components/auth/AdditionalInformation';
 import ShowAvailability from '@/components/auth/ShowAvailability';
 import SignUpForm from '@/components/auth/SignUpForm';
+import ParentInformation from '@/components/auth/ParentInformation';
+import axios from 'axios';
 
 export interface ParentDetails {
   firstName: string;
@@ -109,8 +111,6 @@ const Page = () => {
     },
   };
 
-  console.log('formData: ', formData);
-
   const handleOptionChange = (option: string) => {
     setSelectedLevel(option);
   };
@@ -136,6 +136,17 @@ const Page = () => {
       country: data.country,
       stateCity: data.stateCity,
       institution: data.institution,
+      streetName: data.streetName,
+      zipCode: data.zipCode,
+    });
+    setQuestionNo(QuestionNo + 1);
+  };
+
+  const handleParentDetailsConfirmation = (data: any) => {
+    setPersonalDetailsIsConfirmed({
+      ...personalDetailsIsConfirmed,
+      country: data.country,
+      stateCity: data.stateCity,
       streetName: data.streetName,
       zipCode: data.zipCode,
     });
@@ -174,42 +185,43 @@ const Page = () => {
 
     try {
       const referId = localStorage.getItem('referIdPerson');
-
-      const response = await fetch('/api/auth/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: personalDetailsIsConfirmed.email,
-          password: personalDetailsIsConfirmed.password,
-          student: formData,
-          referId: referId || null,
-        }),
+      // const response = await axios.post("/api/auth/signup/parent", formData);
+      const response = await axios.post('/api/auth/signup/parent', {
+        ...formData,
+        referId: referId || null, // Include the referId in the request data
       });
-
-      const data = await response.json();
-      if (!response.ok) {
-        seterror(data.message);
-        throw new Error(data.message || 'Signup failed');
-      }
-
-      router.push('/StudentSignup/Confirmation');
-      sendGAEvent('event', 'studentSignup', { value: 'success' });
+      // Redirect to confirmation page on successful signup
+      router.push('/ParentSignup/Confirmation');
+      sendGAEvent('event', 'parentSignup', { value: 'success' });
       localStorage.removeItem('referIdPerson');
-      setLoading(false);
     } catch (error: any) {
-      setLoading(false);
-      if (error.message) {
+      // setLoading('Continue');
+      let errorMessage =
+        'An unexpected error occurred. Please try again later.';
+
+      if (error.response) {
         setLoading(false);
-        seterror(error.message);
         // Handle errors from the server
-        console.error('Signup error:', error.message);
+        if (error.response.data && error.response.data.message) {
+          errorMessage = error.response.data.message;
+        } else {
+          errorMessage =
+            'Error: ' +
+            error.response.status +
+            ' - ' +
+            error.response.statusText;
+        }
+      } else if (error.request) {
+        // Handle network errors (request was made but no response received)
+        errorMessage = 'Network error. Please check your internet connection.';
       } else {
         setLoading(false);
-        // Handle network or other errors
-        console.error('Error during signup:', error.message);
+        // Handle other errors
+        errorMessage = 'Error: ' + error.message;
       }
+
+      // Set the error message to state
+      seterror(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -295,6 +307,13 @@ const Page = () => {
         );
       case 5:
         return (
+          <ParentInformation
+            onConfirm={handleParentDetailsConfirmation}
+            title="Parent's Personal Information"
+          />
+        );
+      case 6:
+        return (
           <SignUpForm
             handleGoogleSignIn={handleGoogleSignIn}
             signUpFormSubmitHandler={signUpFormSubmitHandler}
@@ -302,6 +321,8 @@ const Page = () => {
             setPersonalDetailsIsConfirmed={setPersonalDetailsIsConfirmed}
           />
         );
+      default:
+        return null;
     }
   };
 
