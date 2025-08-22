@@ -4,14 +4,18 @@ import FormContainer from '@/components/auth/FormContainer';
 interface LevelSelectionProps {
   handleOptionChange: (selectedLevel: string) => void;
   confirmGrade: () => void;
+  formType: string;
+  title: string;
 }
 
 const LevelSelection = ({
   handleOptionChange,
   confirmGrade,
+  formType,
+  title,
 }: LevelSelectionProps) => {
   return (
-    <FormContainer title='What is your level of study?'>
+    <FormContainer title={title}>
       <div className='space-y-4 sm:space-y-6'>
         <button
           onClick={() => handleOptionChange('elementary')}
@@ -41,15 +45,17 @@ const LevelSelection = ({
           College / Graduate school
         </button>
 
-        <button
-          onClick={() => {
-            handleOptionChange('adult');
-            confirmGrade();
-          }}
-          className='w-full py-4 px-6 bg-[#DDD3F8] border-2 border-[#9184F0] rounded-full text-[#534988] text-lg sm:text-xl font-medium hover:bg-[#9184F0] hover:text-white transition-all duration-300'
-        >
-          Adult / professional
-        </button>
+        {formType === 'student' && (
+          <button
+            onClick={() => {
+              handleOptionChange('adult');
+              confirmGrade();
+            }}
+            className='w-full py-4 px-6 bg-[#DDD3F8] border-2 border-[#9184F0] rounded-full text-[#534988] text-lg sm:text-xl font-medium hover:bg-[#9184F0] hover:text-white transition-all duration-300'
+          >
+            Adult / professional
+          </button>
+        )}
       </div>
     </FormContainer>
   );

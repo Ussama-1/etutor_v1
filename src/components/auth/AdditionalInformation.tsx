@@ -3,9 +3,15 @@ import FormContainer from '@/components/auth/FormContainer';
 
 interface AdditionalInformationProps {
   onConfirm: (additionalInfo: string) => void;
+  title: string;
+  description: string;
 }
 
-const AdditionalInformation = ({ onConfirm }: AdditionalInformationProps) => {
+const AdditionalInformation = ({
+  onConfirm,
+  title,
+  description,
+}: AdditionalInformationProps) => {
   const [additionalInfo, setAdditionalInfo] = useState('');
   const [error, setError] = useState(false);
 
@@ -25,18 +31,12 @@ const AdditionalInformation = ({ onConfirm }: AdditionalInformationProps) => {
   };
 
   return (
-    <FormContainer
-      title='Additional Information'
-      maxWidth='max-w-4xl'
-      titleAlignment='left'
-    >
+    <FormContainer title={title} maxWidth='max-w-4xl' titleAlignment='left'>
       <div className='space-y-8'>
         {/* Description */}
         <div>
           <p className='text-[#685AAD] text-lg leading-relaxed'>
-            Share anything that could help your eTutor support you better — like
-            your learning style, challenges, focus issues, or accommodations you
-            use at school. This will help us tailor your learning experience.
+            {description}
           </p>
         </div>
 

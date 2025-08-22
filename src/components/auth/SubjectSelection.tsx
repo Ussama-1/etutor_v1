@@ -4,6 +4,7 @@ import { Check, ChevronDown, ChevronUp, X } from 'lucide-react';
 
 interface SubjectSelectionProps {
   subjectConfirmationHandler: (selectedSubjects: string[]) => void;
+  title: string;
 }
 
 interface SubjectOption {
@@ -78,6 +79,7 @@ const subjectOptions: SubjectOption[] = [
 
 const SubjectSelection = ({
   subjectConfirmationHandler,
+  title,
 }: SubjectSelectionProps) => {
   const [isSubjectDropdownOpen, setIsSubjectDropdownOpen] = useState(false);
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
@@ -99,7 +101,7 @@ const SubjectSelection = ({
   };
 
   return (
-    <FormContainer title='What subjects do you need help with?'>
+    <FormContainer title={title}>
       <div className='w-full mx-auto mt-6 mb-4'>
         <div className='relative select-none'>
           <div

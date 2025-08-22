@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import FormContainer from '@/components/auth/FormContainer';
 import Image from 'next/image';
-import Calendaricon from '../../../../public/calendaricongray.svg';
+import Calendaricon from '../../../public/calendaricongray.svg';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface ShowAvailabilityProps {
   onConfirm: (selectedDate: Date, selectedTimeZone: string) => void;
+  title: string;
 }
 
 const months: string[] = [
@@ -91,7 +92,7 @@ const timezones: { label: string; value: string }[] = [
   { label: 'Kiritimati, GMT +14:00', value: 'Kiritimati, GMT +14:00' },
 ];
 
-const ShowAvailability = ({ onConfirm }: ShowAvailabilityProps) => {
+const ShowAvailability = ({ onConfirm, title }: ShowAvailabilityProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
@@ -175,11 +176,7 @@ const ShowAvailability = ({ onConfirm }: ShowAvailabilityProps) => {
   };
 
   return (
-    <FormContainer
-      title='When are you available?'
-      maxWidth='max-w-2xl'
-      titleAlignment='left'
-    >
+    <FormContainer title={title} maxWidth='max-w-2xl' titleAlignment='left'>
       <div className='space-y-8'>
         <div className='w-full mx-auto relative '>
           <div className='w-full mx-auto relative'>

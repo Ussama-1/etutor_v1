@@ -4,6 +4,7 @@ import { ChevronDown } from 'lucide-react';
 
 interface PersonalDetailsFormProps {
   onConfirm: (data: StudentFormData) => void;
+  title: string;
 }
 
 export interface StudentFormData {
@@ -120,7 +121,10 @@ export const cities: string[] = [
   'Triesen',
 ];
 
-const PersonalDetailsForm = ({ onConfirm }: PersonalDetailsFormProps) => {
+const PersonalDetailsForm = ({
+  onConfirm,
+  title,
+}: PersonalDetailsFormProps) => {
   const [formData, setFormData] = useState<StudentFormData>({
     firstName: '',
     lastName: '',
@@ -216,11 +220,7 @@ const PersonalDetailsForm = ({ onConfirm }: PersonalDetailsFormProps) => {
   };
 
   return (
-    <FormContainer
-      title='Fill in your Personal Information'
-      maxWidth='max-w-5xl'
-      titleAlignment='left'
-    >
+    <FormContainer title={title} maxWidth='max-w-5xl' titleAlignment='left'>
       <div className='space-y-8'>
         {/* First Row - First Name, Last Name, Age */}
         <div className='grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8'>

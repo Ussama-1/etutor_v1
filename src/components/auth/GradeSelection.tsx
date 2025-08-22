@@ -6,6 +6,7 @@ interface GradeSelectionProps {
   handleGradeClick: (selectedGrade: string) => void;
   selectedGrade: string | null;
   gradeConfirmationHandler: () => void;
+  title: string;
 }
 
 interface GradeOption {
@@ -53,9 +54,10 @@ const GradeSelection = ({
   handleGradeClick,
   selectedGrade,
   gradeConfirmationHandler,
+  title,
 }: GradeSelectionProps) => {
   return (
-    <FormContainer title='What is your Grade?'>
+    <FormContainer title={title}>
       <div className='space-y-8'>
         <div className='grid grid-cols-2 gap-4'>
           {gradeOptions[grade].map((grade: GradeOption, index: number) => (
