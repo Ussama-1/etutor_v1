@@ -1,6 +1,5 @@
 // signup.ts
 import { hash } from 'bcryptjs';
-import { connectMongoDB } from '../../../connection/connection';
 import UserModel from '../../../models/User';
 import ParentModel from '../../../models/Parent';
 import { NextRequest, NextResponse } from 'next/server';
