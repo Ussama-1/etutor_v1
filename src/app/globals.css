@@ -2,11 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-
-
 @font-face {
   font-family: 'roboto';
-  src: url('/public/assets/fonts/RobotoCondensed-Regular.ttf');
+  src: url("../../public/assets/fonts/RobotoCondensed-Regular.ttf");
   font-weight: normal;
   font-style: normal;
 }

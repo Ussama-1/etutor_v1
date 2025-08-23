@@ -1,5 +1,6 @@
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 // import { withAuth } from "next-auth/middleware";
-// import { NextResponse } from "next/server";
 
 // // Define role-specific route mappings
 // const ROLE_ROUTES = {
@@ -12,7 +13,7 @@
 
 // // Check if a path is a protected route
 // const isProtectedRoute = (path: string): boolean => {
-//   return Object.values(ROLE_ROUTES).some(route => 
+//   return Object.values(ROLE_ROUTES).some(route =>
 //     path.startsWith(route)
 //   );
 // };
@@ -21,7 +22,7 @@
 //   function middleware(req) {
 //     const token = req.nextauth.token;
 //     const path = req.nextUrl.pathname;
-    
+
 //     // If not logged in, redirect to signin for any protected route
 //     if (!token && isProtectedRoute(path)) {
 //       return NextResponse.redirect(new URL('/signin', req.url));
@@ -57,7 +58,7 @@
 //         // For protected routes, strictly check role permissions
 //         const userRole = token.role as UserRole;
 //         const allowedPath = ROLE_ROUTES[userRole];
-        
+
 //         // Only allow access if the path matches the user's role
 //         return path.startsWith(allowedPath);
 //       },
@@ -82,16 +83,10 @@
 //   ]
 // };
 
-
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
- 
 // This function can be marked `async` if using `await` inside
-export function middleware(request: NextRequest) {
-  
-}
- 
+export function middleware(request: NextRequest) {}
+
 // See "Matching Paths" below to learn more
 export const config = {
   matcher: '/((?!_next/static|_next/image|favicon.ico|public).*)',
-}
+};

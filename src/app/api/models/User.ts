@@ -11,8 +11,8 @@ export interface IUser extends Document {
   etokis: number;
   referredBy?: string;
   profilePicture?: string;
-  trialSessions: any,
-  hasCompletedFirstSession: boolean,
+  trialSessions: any;
+  hasCompletedFirstSession: boolean;
   stripeSubscriptionId: string;
   planType: any;
   tutorLevel: string;
@@ -23,7 +23,6 @@ export interface IUser extends Document {
   stripeMonthlyPrice: number;
   TrialSessionLeft: number;
   subscriptionIsActive: boolean;
-
 }
 
 function generateReferralCode(): string {
@@ -43,7 +42,7 @@ function generateReferralCode(): string {
 
 const PlanTypeSchema = new Schema(
   {
-    type: { type: String, default: "no membership" },
+    type: { type: String, default: 'no membership' },
   },
   { timestamps: true } // Automatically adds createdAt and updatedAt fields
 );
@@ -59,11 +58,15 @@ const UserSchema: Schema<IUser> = new Schema(
     etokis: { type: Number, default: 0 },
     referralCode: { type: String, unique: true, default: null },
     referredBy: { type: String, default: null },
-    profilePicture: { type: String, default: "https://static.vecteezy.com/system/resources/thumbnails/005/544/718/small_2x/profile-icon-design-free-vector.jpg" },
+    profilePicture: {
+      type: String,
+      default:
+        'https://static.vecteezy.com/system/resources/thumbnails/005/544/718/small_2x/profile-icon-design-free-vector.jpg',
+    },
     trialSessions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Teacher' }],
     hasCompletedFirstSession: { type: Boolean, default: false },
     stripeSubscriptionId: { type: String },
-    planType: { type: PlanTypeSchema ,default: () => ({}) },
+    planType: { type: PlanTypeSchema, default: () => ({}) },
     tutorLevel: { type: String },
     durationMonths: { type: String },
     sessionsPerMonth: { type: Number, default: 0 },
@@ -71,8 +74,7 @@ const UserSchema: Schema<IUser> = new Schema(
     subscriptionDateEnd: { type: String },
     stripeMonthlyPrice: { type: Number, default: 0 },
     TrialSessionLeft: { type: Number, default: 2 },
-    subscriptionIsActive: { type: Boolean, default: true }
-
+    subscriptionIsActive: { type: Boolean, default: true },
   },
   {
     timestamps: true,
@@ -86,6 +88,7 @@ UserSchema.pre('save', async function (next) {
   next();
 });
 
-const UserModel: Model<IUser> = mongoose.models.User || mongoose.model<IUser>('User', UserSchema);
+const UserModel: Model<IUser> =
+  mongoose.models.User || mongoose.model<IUser>('User', UserSchema);
 
 export default UserModel;
